@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>midterm_pres.knit</title>
+    <meta charset="utf-8" />
+    <meta name="author" content=" Luke Lamontagne " />
+    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# <img src="./figures/bat-cartoon.png" />
+]
+.subtitle[
+## Midterm Presentation
+]
+.author[
+### <font size="5"> Luke Lamontagne </font>
+]
+
+---
+
+
+&lt;style&gt;
+
+.remark-slide-content {
+  background-color: #FFFFFF;
+  border-top: 80px solid #F9C389;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.5;
+  padding: 1em 2em 1em 2em
+}
+
+.inverse {
+  background-color: #696767;
+  border-top: 80px solid #696767;
+  text-shadow: none;
+  background-image: url(https://github.com/goodekat/presentations/blob/master/2019-isugg-gganimate-spooky/figures/spider.png?raw=true);
+	background-position: 50% 75%;
+  background-size: 150px;
+}
+
+.your-turn{
+  background-color: #8C7E95;
+  border-top: 80px solid #F9C389;
+  text-shadow: none;
+  background-image: url(https://github.com/goodekat/presentations/blob/master/2019-isugg-gganimate-spooky/figures/spider.png?raw=true);
+	background-position: 95% 90%;
+  background-size: 75px;
+}
+
+.title-slide {
+  background-color: #F9C389;
+  border-top: 80px solid #F9C389;
+  background-image: none;
+}
+
+.title-slide &gt; h1  {
+  color: #111111;
+  font-size: 40px;
+  text-shadow: none;
+  font-weight: 400;
+  text-align: left;
+  margin-left: 15px;
+  padding-top: 80px;
+}
+.title-slide &gt; h2  {
+  margin-top: -25px;
+  padding-bottom: -20px;
+  color: #111111;
+  text-shadow: none;
+  font-weight: 300;
+  font-size: 35px;
+  text-align: left;
+  margin-left: 15px;
+}
+.title-slide &gt; h3  {
+  color: #111111;
+  text-shadow: none;
+  font-weight: 300;
+  font-size: 25px;
+  text-align: left;
+  margin-left: 15px;
+  margin-bottom: -30px;
+}
+
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.left-code {
+  color: #777;
+  width: 40%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 59%;
+  float: right;
+  padding-left: 1%;
+}
+&lt;/style&gt;
+
+
+
+
+
+
+# Plot 1: Patients for Each Provider, Sorted by Sex
+
+.left-code[
+
+```r
+p1 &lt;- df %&gt;% ggplot() + geom_bar(mapping=aes(x=provider, fill=sex), position = 'dodge') +
+  labs(x='Provider', 
+       y='Count of Patients',
+       fill = 'Sex', 
+       title = 'Patients for Each Provider, Sorted by Sex', 
+       caption = 'Pink bars indicate males, and green bars indicate females. Provider 7205 has the most patients by a noticable amount, but it is also apparent that provider 7214 has a large proportion of female patients.')
+
+p1
+```
+]
+.right-plot[
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# Plot 2: Ages of patients with Provider 7205, Sorted by Sex
+
+.left-code[
+
+```r
+library(gganimate)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(dplyr)
+df %&gt;%
+  filter(provider == '7205') %&gt;%
+  ggplot() + geom_bar(mapping=aes(x=age, fill=sex), position = 'dodge') +
+  labs(x='Age', 
+       y='Count of Patients',
+       fill = 'Sex', 
+       title = 'Ages of patients with Provider 7205, Sorted by Sex', 
+       caption = 'Pink bars indicate males, and blue bars indicate females. There are more males in the 50 to 75 age range, and more females in the 75 to 100 age range.')
+```
+]
+.right-plot[
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# Plot 3: Length of Stay by Age Based on Sex
+
+.left-code[
+
+```r
+df %&gt;% 
+  ggplot()+ 
+  geom_point(aes(x=age, y=los, color = sex))+
+  labs(x='Age',
+       y='Length of Stay',
+       title='Length of Stay by Age Based on Sex',
+       caption='Pink represents males, green represents females. This scatter plot displays the relationship between patient age and length of stay based on sex.')
+```
+]
+.right-plot[
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-5-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# Plot 4:
+
+.left-code[
+
+```r
+df %&gt;% 
+  ggplot()+
+  geom_point(mapping = aes(x = los, y = tot))+
+  facet_wrap(~provider)+
+  labs(x='Length of Stay',
+       y='Total Charge',
+       title='Relationship between Total Charge and Length of Stay',
+       caption='Each plot represents a different provider, showing the relationship between the length of stay and the total charge for those patients for each provider.')
+```
+]
+.right-plot[
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
+]
+---
+# Plot 5: Average total cost by age
+
+.left-code[
+
+```r
+df %&gt;% group_by(age)%&gt;%
+  summarise(avgtot = mean(tot)) %&gt;% 
+  ggplot()+
+  geom_point(aes(x=age, y=avgtot), position = 'dodge')+
+  labs(x= 'Age', y= 'Average Total Cost', title = "Average total cost by age", caption = 'Relationship between age and the average total cost. Noticable pattern in plot.')
+```
+]
+.right-plot[
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+]
+---
+# Plot 6: Relationship between Total Charge and Length of Stay
+
+.left-code[
+
+```r
+dfp6 &lt;- df %&gt;% group_by(age,sex)%&gt;%
+  summarise(avgtot = mean(tot))
+dfp6 %&gt;%
+  ggplot()+
+  geom_point(mapping = aes(x = age, y = avgtot, color = sex))+
+  #facet_wrap(~sex)+
+  labs(x='Age',
+       y='Average Total Charge',
+       title='Relationship between Total Charge and Length of Stay',
+       caption='Relationship between age and the average total cost, but sorted by sex (pink is male, green is female). Noticable pattern in plot. Males charged more.')
+```
+]
+.right-plot[
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+]
+---
+# Plot 7: Average Total Cost Based on Sex
+
+.left-code[
+
+```r
+dfp7 &lt;- df %&gt;% 
+  group_by(sex) %&gt;%
+  summarise(avgtotsex = mean(tot))
+dfp7 %&gt;%
+  ggplot(aes(x = sex, y = avgtotsex, fill=sex)) +
+    geom_bar(stat = "identity")+
+  labs(x='Sex',
+       y='Average Total Cost',
+       title='Average Total Cost Based on Sex',
+       caption='Pink represents males, green represents females, blue represents other. This scatter plot displays the average total cost for each sex.')
+```
+]
+.right-plot[
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+]
+---
+# Plot 8: Proportion of Payment Type By Sex
+
+.left-code[
+
+```r
+df %&gt;%
+  filter(pay_ub92 &lt; 20) %&gt;%
+  ggplot() + 
+  geom_bar(mapping=aes(x=pay_ub92, fill=sex), position = 'fill') +
+  labs(x='Payment Type', 
+       y='Percent',
+       fill = 'Sex', 
+       title = 'Proportion of Payment Type By Sex', 
+       caption = 'yes')
+```
+]
+.right-plot[
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
+]
+---
+# Plot 9: Age Distributions Based on Payment Method
+
+.left-code[
+
+```r
+df$pay_method &lt;- case_when(
+  df$pay_ub92 == 1 ~ 'Medicare',
+  df$pay_ub92 == 2 ~ 'Medicare Managed Care',
+  df$pay_ub92 == 3 ~ 'Medicaid Fee for Service',
+  df$pay_ub92 == 4 ~ 'RIte Care',
+  df$pay_ub92 == 5 ~ 'Out-of-state Medicaid Managed Care',
+  df$pay_ub92 == 6 ~ 'Blue Cross',
+  df$pay_ub92 == 7 ~ 'Blue Chip',
+  df$pay_ub92 == 8 ~ 'United Health Care',
+  df$pay_ub92 == 9 ~ 'Commercial insurance (Other than listed)',
+  df$pay_ub92 == 10 ~ 'Champus',
+  df$pay_ub92 == 11 ~ 'Workers Compensation',
+  df$pay_ub92 == 12 ~ 'Other',
+  df$pay_ub92 == 13 ~ 'Self Pay',
+  df$pay_ub92 == 14 ~ 'Free care',
+  df$pay_ub92 == 15 ~ 'NHP Comm')
+df %&gt;% 
+  ggplot()+
+  geom_boxplot(mapping = aes(x = age, y = pay_method))+
+  labs(x='Age',
+       y='Payment Method',
+       title='Age Distributions Based on Payment Method',
+       caption='A box plot displaying summary 
+       statistics for patient age for each payment method.')
+```
+]
+.right-plot[
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
+]
+---
+# Plot 10: Patients for Each Payment, Sorted by Age range
+
+.left-code[
+
+```r
+df$ageRange &lt;- case_when(
+  df$age &lt; 20 ~ '0-20',
+  df$age %in% (21:40) ~ '21-40',
+  df$age %in% (41:60) ~ '41-60',
+  df$age %in% (61:80) ~ '61-80',
+  df$age %in% (81:100) ~ '81-100',)
+df %&gt;% filter(pay_ub92 &lt; 20) %&gt;% ggplot() + geom_bar(mapping=aes(x=pay_ub92, fill=ageRange), position = 'dodge') +
+  labs(x='Payment Method', 
+       y='Count of Patients',
+       fill = 'Age Range', 
+       title = 'Patients for Each Payment, Sorted by Age range', 
+       caption = 'Chart shows what payment methods are common for different age ranges.')
+```
+]
+.right-plot[
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-12-1.png" style="display: block; margin: auto;" /&gt;
+]
+---
+# Animated Plot: Age ranges and payment types
+
+.left-code[
+
+```r
+library(gifski)
+library(ggplot2)
+library(tidyverse)
+library(knitr)
+library(lubridate)
+
+d1 &lt;- df %&gt;% group_by(ageRange, pay_method) %&gt;% summarise(avg_tot = mean(tot))
+d2 &lt;- d1 %&gt;% group_by(ageRange) %&gt;% mutate(rank=rank(-avg_tot)) 
+d3 &lt;- d2 %&gt;% filter(rank &lt;= 10)
+a1 &lt;- d3 %&gt;% ggplot(aes(x=rank, y=avg_tot, group=pay_method, fill=pay_method, label=pay_method)) + geom_col()+
+    geom_text(aes(y = avg_tot, label = pay_method), hjust = 1.4)+ 
+    coord_flip(clip = "off", expand = FALSE) +scale_x_reverse()+
+    labs(title = 'Age Range {closest_state}', x='', y='Total Charge', fill='Payment Method')+
+    theme(plot.title = element_text(hjust = 1, size = 22),
+          axis.ticks.y = element_blank(),
+          axis.text.y  = element_blank()) + 
+    transition_states(ageRange)+
+    ease_aes("cubic-in-out")
+animate(a1, nframes = 200)
+```
+]
+.right-plot[
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-13-1.gif" style="display: block; margin: auto;" /&gt;
+]
+---
+# Comparing Models
+
+.left-code[
+
+```r
+df$target &lt;- case_when(df$tot &lt; median(df$tot) ~ 'low',TRUE ~ 'high')
+
+df3 &lt;- df %&gt;% select("age", "sex", "raceethn", "provider", "moa", "mod", "admtype", "campus", "los", "target")
+
+library(tidyverse)
+library(caret)
+
+df3 &lt;- df3 %&gt;% 
+  filter(raceethn!='',admtype!='') %&gt;% 
+  mutate(target=as.factor(target),
+    sex=as.factor(sex),
+    raceethn=as.factor(raceethn),
+    provider=as.factor(provider),
+    admtype=as.factor(admtype),
+    campus=as.factor(campus))
+#add to top^
+set.seed(2020)
+parts &lt;- createDataPartition(df3$target, p = .1, list = FALSE)
+
+traindf &lt;- df3[ parts,]
+testdf &lt;- df3[-parts,]
+
+library(rpart)
+treedf &lt;- rpart(target ~ ., data = traindf, control = rpart.control(maxdepth = 3))
+
+library(tidyverse)
+library(caret)
+library(mlbench)
+
+trControl = trainControl(method = "cv",number = 5)
+tuneGrid = expand.grid(mtry = 2:4,splitrule = c('gini', 'extratrees'),min.node.size = c(1:10))
+model2 &lt;- train(target ~ ., data=traindf,method = "treebag",trControl = trControl, maxdepth = 5)
+prediction2 &lt;- predict(model2, testdf)
+confMatrix2 &lt;- confusionMatrix(data = prediction2, reference = testdf$target)
+confMatrix2$overall[1]
+
+model1 &lt;- train(target ~ ., data= traindf ,method = "rpart2", trControl=trControl, maxdepth = 5)
+
+prediction1 &lt;- predict(model1, testdf)
+confMatrix1 &lt;- confusionMatrix(data = prediction1, reference = testdf$target)
+confMatrix1$overall[1]
+
+results &lt;- resamples(list('Model 1' = model1,'Model 2' = model2))
+bwplot(results)
+```
+]
+.right-plot[
+
+```
+##  Accuracy 
+## 0.8088069
+```
+
+```
+##  Accuracy 
+## 0.8127363
+```
+
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# Final Model: Model 1
+
+.left-code[
+
+```r
+predictionFinal &lt;- predict(model1, testdf)
+confMatrixFinal &lt;- confusionMatrix(data = predictionFinal, reference = testdf$target, positive = "low")
+confMatrixFinal$overall[1]
+```
+]
+.right-plot[
+
+```
+##  Accuracy 
+## 0.8127363
+```
+]
+
+---
+# Binary Target Variable
+
+.left-code[
+
+```r
+df3_2 &lt;- df3
+df3_2$target &lt;- case_when(df3$provider == '7205' ~ 'RI Hospital', TRUE ~ 'Other')
+df3_2 &lt;- df3_2 %&gt;% select(-provider, -campus)
+
+df3_2 &lt;- df3_2 %&gt;% 
+  filter(raceethn!='',admtype!='') %&gt;% 
+  mutate(target=as.factor(target),
+    raceethn=as.factor(raceethn),
+    admtype=as.factor(admtype))
+
+set.seed(2020)
+parts2 &lt;- createDataPartition(df3_2$target, p = .1, list = FALSE)
+
+traindf2 &lt;- df3_2[ parts2,]
+testdf2 &lt;- df3_2[-parts2,]
+
+library(rpart)
+treedf2 &lt;- rpart(target ~ ., data = traindf2, control = rpart.control(maxdepth = 3))
+
+model3 &lt;- train(target ~ ., data= traindf2 ,method = "rpart2",trControl = trControl, maxdepth = 5)
+
+prediction3 &lt;- predict(model3, testdf2)
+confMatrix3 &lt;- confusionMatrix(data = prediction3, reference = testdf2$target)
+confMatrix3$overall[1]
+
+trControl = trainControl(method = "cv",number = 5)
+tuneGrid = expand.grid(mtry = 2:4,splitrule = c('gini', 'extratrees'),min.node.size = c(1:10))
+model4 &lt;- train(target ~ ., data=traindf2,method = "treebag",trControl = trControl, maxdepth = 5)
+prediction4 &lt;- predict(model4, testdf2)
+confMatrix4 &lt;- confusionMatrix(data = prediction4, reference = testdf2$target)
+confMatrix4$overall[1]
+
+results &lt;- resamples(list('Model 3' = model3,'Model 4' = model4))
+bwplot(results)
+```
+]
+.right-plot[
+
+```
+##  Accuracy 
+## 0.7439925
+```
+
+```
+## Accuracy 
+## 0.705665
+```
+
+&lt;img src="midterm_pres_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# Challenges
+
+- Making the presentation through r
+- Knitting and errors
+- Over-fitting trees/models
+- Getting color on the plots for the presentation
+- Choosing the right plots (some came out horrible)
+- Timing
+
+---
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"slideNumberFormat": "<div class=\"progress-bar-container\">\n  <div class=\"progress-bar\" style=\"width: calc(%current% / %total% * 100%);\">\n  </div>\n</div>`"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,506 @@
+
+---
+title: "![](./figures/bat-cartoon.png)"
+subtitle: "Midterm Presentation"
+author: <font size="5"> Luke Lamontagne </font>
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: |
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: calc(%current% / %total% * 100%);">
+          </div>
+        </div>`
+---
+
+<style>
+
+.remark-slide-content {
+  background-color: #FFFFFF;
+  border-top: 80px solid #F9C389;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.5;
+  padding: 1em 2em 1em 2em
+}
+
+.inverse {
+  background-color: #696767;
+  border-top: 80px solid #696767;
+  text-shadow: none;
+  background-image: url(https://github.com/goodekat/presentations/blob/master/2019-isugg-gganimate-spooky/figures/spider.png?raw=true);
+	background-position: 50% 75%;
+  background-size: 150px;
+}
+
+.your-turn{
+  background-color: #8C7E95;
+  border-top: 80px solid #F9C389;
+  text-shadow: none;
+  background-image: url(https://github.com/goodekat/presentations/blob/master/2019-isugg-gganimate-spooky/figures/spider.png?raw=true);
+	background-position: 95% 90%;
+  background-size: 75px;
+}
+
+.title-slide {
+  background-color: #F9C389;
+  border-top: 80px solid #F9C389;
+  background-image: none;
+}
+
+.title-slide > h1  {
+  color: #111111;
+  font-size: 40px;
+  text-shadow: none;
+  font-weight: 400;
+  text-align: left;
+  margin-left: 15px;
+  padding-top: 80px;
+}
+.title-slide > h2  {
+  margin-top: -25px;
+  padding-bottom: -20px;
+  color: #111111;
+  text-shadow: none;
+  font-weight: 300;
+  font-size: 35px;
+  text-align: left;
+  margin-left: 15px;
+}
+.title-slide > h3  {
+  color: #111111;
+  text-shadow: none;
+  font-weight: 300;
+  font-size: 25px;
+  text-align: left;
+  margin-left: 15px;
+  margin-bottom: -30px;
+}
+
+</style>
+
+```{css, echo=FALSE}
+.left-code {
+  color: #777;
+  width: 40%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 59%;
+  float: right;
+  padding-left: 1%;
+}
+```
+
+```{r setup, include = FALSE}
+
+# R markdown options
+knitr::opts_chunk$set(echo = TRUE, 
+                      cache = TRUE, 
+                      fig.width = 10,
+                      fig.height = 5,
+                      fig.align = "center", 
+                      message = FALSE, 
+                      warning = FALSE)
+
+# Load packages
+library(gapminder)
+library(gganimate)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+
+```
+
+
+```{r,  message=FALSE, warning=FALSE, include = FALSE}
+library(gganimate)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(dplyr)
+df <- read_csv('midterm.csv')
+```
+
+# Plot 1: Patients for Each Provider, Sorted by Sex
+
+.left-code[
+```{r step1281110, eval = FALSE, echo = TRUE}
+p1 <- df %>% ggplot() + geom_bar(mapping=aes(x=provider, fill=sex), position = 'dodge') +
+  labs(x='Provider', 
+       y='Count of Patients',
+       fill = 'Sex', 
+       title = 'Patients for Each Provider, Sorted by Sex', 
+       caption = 'Pink bars indicate males, and green bars indicate females. Provider 7205 has the most patients by a noticable amount, but it is also apparent that provider 7214 has a large proportion of female patients.')
+
+p1
+```
+]
+.right-plot[
+```{r, ref.label = "step1281110", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+
+---
+# Plot 2: Ages of patients with Provider 7205, Sorted by Sex
+
+.left-code[
+```{r step1281111, eval = FALSE, echo = TRUE}
+library(gganimate)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(dplyr)
+df %>%
+  filter(provider == '7205') %>%
+  ggplot() + geom_bar(mapping=aes(x=age, fill=sex), position = 'dodge') +
+  labs(x='Age', 
+       y='Count of Patients',
+       fill = 'Sex', 
+       title = 'Ages of patients with Provider 7205, Sorted by Sex', 
+       caption = 'Pink bars indicate males, and blue bars indicate females. There are more males in the 50 to 75 age range, and more females in the 75 to 100 age range.')
+```
+]
+.right-plot[
+```{r, ref.label = "step1281111", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+
+---
+# Plot 3: Length of Stay by Age Based on Sex
+
+.left-code[
+```{r step1281112, eval = FALSE, echo = TRUE}
+df %>% 
+  ggplot()+ 
+  geom_point(aes(x=age, y=los, color = sex))+
+  labs(x='Age',
+       y='Length of Stay',
+       title='Length of Stay by Age Based on Sex',
+       caption='Pink represents males, green represents females. This scatter plot displays the relationship between patient age and length of stay based on sex.')
+```
+]
+.right-plot[
+```{r, ref.label = "step1281112", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+
+---
+# Plot 4:
+
+.left-code[
+```{r step1281113, eval = FALSE, echo = TRUE}
+df %>% 
+  ggplot()+
+  geom_point(mapping = aes(x = los, y = tot))+
+  facet_wrap(~provider)+
+  labs(x='Length of Stay',
+       y='Total Charge',
+       title='Relationship between Total Charge and Length of Stay',
+       caption='Each plot represents a different provider, showing the relationship between the length of stay and the total charge for those patients for each provider.')
+```
+]
+.right-plot[
+```{r, ref.label = "step1281113", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+---
+# Plot 5: Average total cost by age
+
+.left-code[
+```{r step1281114, eval = FALSE, echo = TRUE}
+df %>% group_by(age)%>%
+  summarise(avgtot = mean(tot)) %>% 
+  ggplot()+
+  geom_point(aes(x=age, y=avgtot), position = 'dodge')+
+  labs(x= 'Age', y= 'Average Total Cost', title = "Average total cost by age", caption = 'Relationship between age and the average total cost. Noticable pattern in plot.')
+```
+]
+.right-plot[
+```{r, ref.label = "step1281114", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+---
+# Plot 6: Relationship between Total Charge and Length of Stay
+
+.left-code[
+```{r step1281115, eval = FALSE, echo = TRUE}
+dfp6 <- df %>% group_by(age,sex)%>%
+  summarise(avgtot = mean(tot))
+dfp6 %>%
+  ggplot()+
+  geom_point(mapping = aes(x = age, y = avgtot, color = sex))+
+  #facet_wrap(~sex)+
+  labs(x='Age',
+       y='Average Total Charge',
+       title='Relationship between Total Charge and Length of Stay',
+       caption='Relationship between age and the average total cost, but sorted by sex (pink is male, green is female). Noticable pattern in plot. Males charged more.')
+```
+]
+.right-plot[
+```{r, ref.label = "step1281115", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+---
+# Plot 7: Average Total Cost Based on Sex
+
+.left-code[
+```{r step1281116, eval = FALSE, echo = TRUE}
+dfp7 <- df %>% 
+  group_by(sex) %>%
+  summarise(avgtotsex = mean(tot))
+dfp7 %>%
+  ggplot(aes(x = sex, y = avgtotsex, fill=sex)) +
+    geom_bar(stat = "identity")+
+  labs(x='Sex',
+       y='Average Total Cost',
+       title='Average Total Cost Based on Sex',
+       caption='Pink represents males, green represents females, blue represents other. This scatter plot displays the average total cost for each sex.')
+```
+]
+.right-plot[
+```{r, ref.label = "step1281116", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+---
+# Plot 8: Proportion of Payment Type By Sex
+
+.left-code[
+```{r step1281117, eval = FALSE, echo = TRUE}
+df %>%
+  filter(pay_ub92 < 20) %>%
+  ggplot() + 
+  geom_bar(mapping=aes(x=pay_ub92, fill=sex), position = 'fill') +
+  labs(x='Payment Type', 
+       y='Percent',
+       fill = 'Sex', 
+       title = 'Proportion of Payment Type By Sex', 
+       caption = 'yes')
+```
+]
+.right-plot[
+```{r, ref.label = "step1281117", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+---
+# Plot 9: Age Distributions Based on Payment Method
+
+.left-code[
+```{r step1281118, eval = FALSE, echo = TRUE}
+df$pay_method <- case_when(
+  df$pay_ub92 == 1 ~ 'Medicare',
+  df$pay_ub92 == 2 ~ 'Medicare Managed Care',
+  df$pay_ub92 == 3 ~ 'Medicaid Fee for Service',
+  df$pay_ub92 == 4 ~ 'RIte Care',
+  df$pay_ub92 == 5 ~ 'Out-of-state Medicaid Managed Care',
+  df$pay_ub92 == 6 ~ 'Blue Cross',
+  df$pay_ub92 == 7 ~ 'Blue Chip',
+  df$pay_ub92 == 8 ~ 'United Health Care',
+  df$pay_ub92 == 9 ~ 'Commercial insurance (Other than listed)',
+  df$pay_ub92 == 10 ~ 'Champus',
+  df$pay_ub92 == 11 ~ 'Workers Compensation',
+  df$pay_ub92 == 12 ~ 'Other',
+  df$pay_ub92 == 13 ~ 'Self Pay',
+  df$pay_ub92 == 14 ~ 'Free care',
+  df$pay_ub92 == 15 ~ 'NHP Comm')
+df %>% 
+  ggplot()+
+  geom_boxplot(mapping = aes(x = age, y = pay_method))+
+  labs(x='Age',
+       y='Payment Method',
+       title='Age Distributions Based on Payment Method',
+       caption='A box plot displaying summary 
+       statistics for patient age for each payment method.')
+```
+]
+.right-plot[
+```{r, ref.label = "step1281118", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+---
+# Plot 10: Patients for Each Payment, Sorted by Age range
+
+.left-code[
+```{r step1281119, eval = FALSE, echo = TRUE}
+df$ageRange <- case_when(
+  df$age < 20 ~ '0-20',
+  df$age %in% (21:40) ~ '21-40',
+  df$age %in% (41:60) ~ '41-60',
+  df$age %in% (61:80) ~ '61-80',
+  df$age %in% (81:100) ~ '81-100',)
+df %>% filter(pay_ub92 < 20) %>% ggplot() + geom_bar(mapping=aes(x=pay_ub92, fill=ageRange), position = 'dodge') +
+  labs(x='Payment Method', 
+       y='Count of Patients',
+       fill = 'Age Range', 
+       title = 'Patients for Each Payment, Sorted by Age range', 
+       caption = 'Chart shows what payment methods are common for different age ranges.')
+```
+]
+.right-plot[
+```{r, ref.label = "step1281119", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+---
+# Animated Plot: Age ranges and payment types
+
+.left-code[
+```{r step1281120, eval = FALSE, echo = TRUE}
+library(gifski)
+library(ggplot2)
+library(tidyverse)
+library(knitr)
+library(lubridate)
+
+d1 <- df %>% group_by(ageRange, pay_method) %>% summarise(avg_tot = mean(tot))
+d2 <- d1 %>% group_by(ageRange) %>% mutate(rank=rank(-avg_tot)) 
+d3 <- d2 %>% filter(rank <= 10)
+a1 <- d3 %>% ggplot(aes(x=rank, y=avg_tot, group=pay_method, fill=pay_method, label=pay_method)) + geom_col()+
+    geom_text(aes(y = avg_tot, label = pay_method), hjust = 1.4)+ 
+    coord_flip(clip = "off", expand = FALSE) +scale_x_reverse()+
+    labs(title = 'Age Range {closest_state}', x='', y='Total Charge', fill='Payment Method')+
+    theme(plot.title = element_text(hjust = 1, size = 22),
+          axis.ticks.y = element_blank(),
+          axis.text.y  = element_blank()) + 
+    transition_states(ageRange)+
+    ease_aes("cubic-in-out")
+animate(a1, nframes = 200)
+```
+]
+.right-plot[
+```{r, ref.label = "step1281120", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+---
+# Comparing Models
+
+.left-code[
+```{r step1281121, eval = FALSE, echo = TRUE}
+df$target <- case_when(df$tot < median(df$tot) ~ 'low',TRUE ~ 'high')
+
+df3 <- df %>% select("age", "sex", "raceethn", "provider", "moa", "mod", "admtype", "campus", "los", "target")
+
+library(tidyverse)
+library(caret)
+
+df3 <- df3 %>% 
+  filter(raceethn!='',admtype!='') %>% 
+  mutate(target=as.factor(target),
+    sex=as.factor(sex),
+    raceethn=as.factor(raceethn),
+    provider=as.factor(provider),
+    admtype=as.factor(admtype),
+    campus=as.factor(campus))
+#add to top^
+set.seed(2020)
+parts <- createDataPartition(df3$target, p = .1, list = FALSE)
+
+traindf <- df3[ parts,]
+testdf <- df3[-parts,]
+
+library(rpart)
+treedf <- rpart(target ~ ., data = traindf, control = rpart.control(maxdepth = 3))
+
+library(tidyverse)
+library(caret)
+library(mlbench)
+
+trControl = trainControl(method = "cv",number = 5)
+tuneGrid = expand.grid(mtry = 2:4,splitrule = c('gini', 'extratrees'),min.node.size = c(1:10))
+model2 <- train(target ~ ., data=traindf,method = "treebag",trControl = trControl, maxdepth = 5)
+prediction2 <- predict(model2, testdf)
+confMatrix2 <- confusionMatrix(data = prediction2, reference = testdf$target)
+confMatrix2$overall[1]
+
+model1 <- train(target ~ ., data= traindf ,method = "rpart2", trControl=trControl, maxdepth = 5)
+
+prediction1 <- predict(model1, testdf)
+confMatrix1 <- confusionMatrix(data = prediction1, reference = testdf$target)
+confMatrix1$overall[1]
+
+results <- resamples(list('Model 1' = model1,'Model 2' = model2))
+bwplot(results)
+```
+]
+.right-plot[
+```{r, ref.label = "step1281121", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+
+---
+# Final Model: Model 1
+
+.left-code[
+```{r step1281122, eval = FALSE, echo = TRUE}
+predictionFinal <- predict(model1, testdf)
+confMatrixFinal <- confusionMatrix(data = predictionFinal, reference = testdf$target, positive = "low")
+confMatrixFinal$overall[1]
+```
+]
+.right-plot[
+```{r, ref.label = "step1281122", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+
+---
+# Binary Target Variable
+
+.left-code[
+```{r step1281123, eval = FALSE, echo = TRUE}
+df3_2 <- df3
+df3_2$target <- case_when(df3$provider == '7205' ~ 'RI Hospital', TRUE ~ 'Other')
+df3_2 <- df3_2 %>% select(-provider, -campus)
+
+df3_2 <- df3_2 %>% 
+  filter(raceethn!='',admtype!='') %>% 
+  mutate(target=as.factor(target),
+    raceethn=as.factor(raceethn),
+    admtype=as.factor(admtype))
+
+set.seed(2020)
+parts2 <- createDataPartition(df3_2$target, p = .1, list = FALSE)
+
+traindf2 <- df3_2[ parts2,]
+testdf2 <- df3_2[-parts2,]
+
+library(rpart)
+treedf2 <- rpart(target ~ ., data = traindf2, control = rpart.control(maxdepth = 3))
+
+model3 <- train(target ~ ., data= traindf2 ,method = "rpart2",trControl = trControl, maxdepth = 5)
+
+prediction3 <- predict(model3, testdf2)
+confMatrix3 <- confusionMatrix(data = prediction3, reference = testdf2$target)
+confMatrix3$overall[1]
+
+trControl = trainControl(method = "cv",number = 5)
+tuneGrid = expand.grid(mtry = 2:4,splitrule = c('gini', 'extratrees'),min.node.size = c(1:10))
+model4 <- train(target ~ ., data=traindf2,method = "treebag",trControl = trControl, maxdepth = 5)
+prediction4 <- predict(model4, testdf2)
+confMatrix4 <- confusionMatrix(data = prediction4, reference = testdf2$target)
+confMatrix4$overall[1]
+
+results <- resamples(list('Model 3' = model3,'Model 4' = model4))
+bwplot(results)
+```
+]
+.right-plot[
+```{r, ref.label = "step1281123", echo = FALSE, cache = TRUE, fig.height = 6, fig.width = 7}
+```
+]
+
+---
+# Challenges
+
+- Making the presentation through r
+- Knitting and errors
+- Over-fitting trees/models
+- Getting color on the plots for the presentation
+- Choosing the right plots (some came out horrible)
+- Timing
+
+---
