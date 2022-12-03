@@ -12,7 +12,7 @@
 
 [Assignment 6](Assignment-6.html)
 
-[Assignment 7](Assignment-7.html)
+[Assignment 7](Assignment-7.html) - [Plot for Assignment 7](plot7.png)
 
 [Assignment 8](Assignment-8.html)
 
@@ -29,3 +29,7 @@
 [Midterm Presentation](midterm_pres.html)
 
 [Assignment 13](Assignment-13.html)
+
+[Assignment 14](Assignment-14.html)
+
+[Assignment 15](Assignment-15.html)

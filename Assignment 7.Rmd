@@ -88,13 +88,18 @@ df %>% filter(Pclass == 1) %>%
 
 8. Make a plot using combo group_by + summarise + geom_col
 ```{r}
-df %>% group_by()
+df %>% group_by(Pclass) %>% 
+  summarise(average_age=mean(Age, na.rm=TRUE)) %>% 
+  ggplot()+ 
+  geom_col(mapping=aes(x=Pclass, y=average_age))
 ```
 
 9. Save a plot and put a link of the plot to your Github Webpage.  To link a plot `abc.png` you just need to insert the following on the README.md
 
 ```{r, eval=FALSE}
-[Link to the plot](abc.png)
+plot7 <- df %>% ggplot()+ 
+  geom_bar(mapping=aes(x=Sex,fill=Embarked), position = 'fill')
+ggsave(filename = 'plot7.png', plot = plot7)
 ```
 
 10. In this question, we will use  the Covid19 vaccination data for the US. The data and data dictionary can be found at the below link:
@@ -158,5 +163,31 @@ Do the follows.
 
 - Use `geom_point` compare the total vaccines (including all types of vaccines) by date between countries/regions in Asia
 
+```{r}
+table(df$location)
+```
+
+```{r}
+df %>% 
+  filter(location %in% c('Japan', 'Nepal', 'Cyprus', 'Hong Kong', 'South Korea')) %>% 
+  group_by(date, location) %>% 
+  summarise(total_vac=sum(total_vaccinations, na.rm=TRUE)) %>% 
+  ggplot()+
+  geom_point(mapping=aes(x=date, 
+                         y=total_vac, 
+                         color=location))
+```
+
 - Use `geom_point` compare the total vaccines (including all types of vaccines) by date between countries/regions in South America in 2021
+
+```{r}
+df %>% 
+  filter(location %in% c('Argentina', 'Peru', 'Ecuador', 'Uruguay', 'South Korea'), date<'2022-01-01', date>='2021-01-01') %>% 
+  group_by(date, location) %>% 
+  summarise(total_vac=sum(total_vaccinations, na.rm=TRUE)) %>% 
+  ggplot()+
+  geom_point(mapping=aes(x=date, 
+                         y=total_vac, 
+                         color=location))
+```
 
