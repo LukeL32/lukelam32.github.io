@@ -24,12 +24,12 @@
 
 [Assignment 12](Assignment-12.html)
 
-[Midterm](midterm_tab.html)
-
-[Midterm Presentation](midterm_pres.html)
+[Midterm](midterm_tab.html) - [Midterm Presentation](midterm_pres.html)
 
 [Assignment 13](Assignment-13.html)
 
 [Assignment 14](Assignment-14.html)
 
 [Assignment 15](Assignment-15.html)
+
+[Final Project](final.html)
