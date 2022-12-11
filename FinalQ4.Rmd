@@ -1,0 +1,83 @@
+
+---
+title: "Titanic - SelectInput"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    logo: logo.png
+    source_code: embed
+    social: menu
+
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(DT)
+df <- read_csv('ScoobyDoo.csv')
+```
+
+```{r}
+df <- df %>%
+  na_if('NULL') %>%
+  drop_na('mainMonsterGender')
+
+df$format = factor(df$format)
+
+monster_gender <- unique(df$mainMonsterGender)
+
+```
+
+{.sidebar}
+=======================================================================
+
+Every Scooby-Doo episode and movie's various variables.
+
+Took ~1 year to watch every Scooby-Doo iteration and track every variable. Many values are subjective by nature of watching but I tried my hardest to keep the data collection consistent.
+
+Select the input for the plots. 
+
+```{r}
+selectInput(inputId = "sex_input", 
+            label = h3("Select Gender of Monster"),
+            choices = monster_gender, 
+            selected = 'Male')
+```
+
+Main Tab 1
+=======================================================================
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Density Plot
+
+```{r}
+renderPlotly({
+  p1 <- df %>% 
+    filter(mainMonsterGender==input$sex_input) %>% 
+    ggplot(aes(x=run.time, color=format))+
+    geom_density()
+  ggplotly(p1)
+})
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Bar Plot
+
+```{r}
+renderPlotly({
+  p2 <- df %>% 
+    filter(mainMonsterGender==input$sex_input) %>% 
+    ggplot(aes(x=suspects.amount, fill=format))+
+    geom_bar()
+  ggplotly(p2)
+})
+```

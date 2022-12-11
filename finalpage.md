@@ -6,19 +6,19 @@
 
 [Question 3](https://lukelam32.shinyapps.io/FinalQ3/)
 
-[Question 4](FinalQ4.html)
+[Question 4](https://lukelam32.shinyapps.io/FinalQ4/)
 
-[Question 5](FinalQ5.html)
+[Question 5](https://lukelam32.shinyapps.io/FinalQ5/)
 
-[Question 6](FinalQ6.html)
+[Question 6](https://lukelam32.shinyapps.io/FinalQ6/)
 
-[Question 7](FinalQ7.html)
+[Question 7](https://lukelam32.shinyapps.io/FinalQ7/)
 
-[Question 8](FinalQ8.html)
+[Question 8](https://lukelam32.shinyapps.io/FinalQ8/)
 
-[Question 9](FinalQ9.html)
+[Question 9](https://lukelam32.shinyapps.io/FinalQ9/)
 
-[Question 10](FinalQ10.html)
+[Question 10](https://lukelam32.shinyapps.io/FinalQ10/)
 
 [Back to Main](https://lukel32.github.io/lukelam32.github.io/)
 
