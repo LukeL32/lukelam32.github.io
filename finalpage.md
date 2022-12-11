@@ -4,7 +4,7 @@
 
 [Question 2](FinalQ2.html)
 
-[Question 3](FinalQ3.html)
+[Question 3](https://lukelam32.shinyapps.io/FinalQ3/)
 
 [Question 4](FinalQ4.html)
 
