@@ -1,0 +1,112 @@
+
+---
+title: "Final Question 2"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    logo: logo.png
+    source_code: embed
+    social: menu
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(DT)
+df <- read_csv('ScoobyDoo.csv')
+```
+
+{.sidebar}
+=======================================================================
+
+### 1. Scooby-Doo
+
+Every Scooby-Doo episode and movie's various variables.
+
+Took ~1 year to watch every Scooby-Doo iteration and track every variable. Many values are subjective by nature of watching but I tried my hardest to keep the data collection consistent.
+
+### 2. Flexdashboard and Plotly
+
+This interactive uses `flexdashboard` and `plotly` to visualize the data. 
+
+Dataset
+=======================================================================
+
+### The Dataset
+
+```{r}
+datatable(df, options = list(
+  pageLength = 25
+))
+```
+
+
+Plots
+=======================================================================
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+#### Plot 1
+
+```{r}
+q2p1 <- df %>%
+  group_by(format) %>%
+  ggplot()+ 
+  geom_bar(mapping=aes(x=format, fill=arrested))+
+  labs(x='Format', y='Count', fill='arrested')
+ggplotly(q2p1)
+```
+
+#### Plot 2
+
+```{r, include=FALSE}
+dfq2p2 <- df %>%
+  na_if("NULL") %>%
+  drop_na(imdb)
+```
+
+```{r}
+q2p2 <- dfq2p2 %>%
+  ggplot()+ 
+  geom_point(mapping=aes(x=index, y=imdb, color=network))+
+  labs(x='Order Aired', y='IMDB Rating',color='network')
+ggplotly(q2p2)
+```
+
+#### Plot 3
+
+```{r}
+q2p3 <- df %>%
+  ggplot()+
+  geom_histogram(mapping=aes(x=zoinks),bins=27)+
+  labs(x="Zoinks Count")
+ggplotly(q2p3)
+```
+
+
+#### Plot 4
+
+```{r}
+q2p4 <- df %>%
+  ggplot()+
+  geom_point(mapping = aes(x = index, y = engagement))+
+  facet_wrap(~settingTerrain)+
+  labs(x="Order Released",y="Engagement")
+ggplotly(q2p4)
+```
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+Example Text
+=======================================================================
+
+This third tab just has some example text.
