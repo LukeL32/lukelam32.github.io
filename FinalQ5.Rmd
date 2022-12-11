@@ -1,6 +1,6 @@
 
 ---
-title: "Scooby-Doo - SelectInput"
+title: "Scooby-Doo - Check Box"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -20,17 +20,9 @@ library(plotly)
 library(knitr)
 library(DT)
 df <- read_csv('ScoobyDoo.csv')
-```
-
-```{r}
 df <- df %>%
   na_if('NULL') %>%
   drop_na('mainMonsterGender')
-
-df$format = factor(df$format)
-
-monster_gender <- unique(df$mainMonsterGender)
-
 ```
 
 {.sidebar}
@@ -43,10 +35,12 @@ Took ~1 year to watch every Scooby-Doo iteration and track every variable. Many 
 Select the input for the plots. 
 
 ```{r}
-selectInput(inputId = "sex_input", 
-            label = h3("Select Gender of Monster"),
-            choices = monster_gender, 
-            selected = 'Male')
+checkboxGroupInput(inputId = "format_input", 
+                   label = h3("Media Format"),
+                   choices = unique(df$format), 
+                   inline = TRUE,
+                   selected = 'TV Series')
+
 ```
 
 Main Tab 1
@@ -60,8 +54,8 @@ Column {data-width=500}
 ```{r}
 renderPlotly({
   p1 <- df %>% 
-    filter(mainMonsterGender==input$sex_input) %>% 
-    ggplot(aes(x=run.time, color=format))+
+    filter(format %in% input$format_input) %>% 
+    ggplot(aes(x=split.up, color=mainMonsterGender))+
     geom_density()
   ggplotly(p1)
 })
@@ -75,8 +69,8 @@ Column {data-width=500}
 ```{r}
 renderPlotly({
   p2 <- df %>% 
-    filter(mainMonsterGender==input$sex_input) %>% 
-    ggplot(aes(x=suspects.amount, fill=format))+
+    filter(format %in% input$format_input) %>% 
+    ggplot(aes(x=imdb, fill=mainMonsterGender))+
     geom_bar()
   ggplotly(p2)
 })
