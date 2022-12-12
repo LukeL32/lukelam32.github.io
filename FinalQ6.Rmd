@@ -1,0 +1,86 @@
+
+---
+title: "Scooby-Doo - SliderInput"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    logo: logo.png
+    source_code: embed
+    social: menu
+
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(DT)
+library(dplyr)
+library(ggplot2)
+df <- read_csv('ScoobyDoo.csv')
+
+df <- df %>%
+  na_if('NULL') %>%
+  drop_na('mainMonsterGender')
+
+df <- df %>%
+  na_if("NULL") %>%
+  drop_na('imdb')
+
+df$imdb <- as.numeric(df$imdb)
+```
+
+{.sidebar}
+=======================================================================
+
+Every Scooby-Doo episode and movie's various variables.
+
+Took ~1 year to watch every Scooby-Doo iteration and track every variable. Many values are subjective by nature of watching but I tried my hardest to keep the data collection consistent.
+
+Select the input for the plots. 
+
+```{r}
+sliderInput(inputId = "imdb_input",
+            label = h2("Select Rating Range"),
+            min = min(df$imdb, na.rm=TRUE),
+            max = max(df$imdb, na.rm=TRUE),
+            value = c(4.6,9.6))
+
+```
+
+Main Tab 1
+=======================================================================
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Density Plot
+
+```{r}
+renderPlotly({
+  p1 <- df %>% 
+    filter(imdb>input$imdb_input[1], imdb<input$imdb_input[2]) %>% 
+    ggplot(aes(x=imdb, color=mainMonsterGender))+
+    geom_density()
+  ggplotly(p1)
+})
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Bar Plot
+
+```{r}
+renderPlotly({
+  p2 <- df %>% 
+    filter(imdb>input$imdb_input[1], imdb<input$imdb_input[2]) %>% 
+    ggplot(aes(x=imdb, fill=mainMonsterGender))+
+    geom_bar()
+  ggplotly(p2)
+})
+```
