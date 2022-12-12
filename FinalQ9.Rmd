@@ -1,0 +1,93 @@
+
+---
+title: "Scooby-Doo - Combination of Inputs"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    logo: logo.png
+    source_code: embed
+    social: menu
+
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(DT)
+library(lubridate)
+df <- read_csv('ScoobyDoo.csv')
+df$imdb <- as.numeric(df$imdb)
+monster_gender <- unique(df$mainMonsterGender)
+format2 <- unique(df$format)
+```
+
+{.sidebar}
+=======================================================================
+
+Every Scooby-Doo episode and movie's various variables.
+
+Took ~1 year to watch every Scooby-Doo iteration and track every variable. Many values are subjective by nature of watching but I tried my hardest to keep the data collection consistent.
+
+Select the input for the plots.  
+
+
+```{r}
+sliderInput(inputId = "imdb_input",
+            label = h3("IMDB Rating Range"),
+            min = min(df$imdb, na.rm=TRUE),
+            max = max(df$imdb, na.rm=TRUE),
+            value= c(4.6, 9.6))
+
+selectInput(inputId = "sex_input", 
+            label = h3("Gender of Monster"),
+            choices = monster_gender, 
+            selected = 'Male')
+
+checkboxGroupInput(inputId = "format_input", 
+                   label = h3("Media Format"),
+                   choices = format2, 
+                   inline = TRUE,
+                   selected = 'Movie')
+```
+
+Main Tab 1
+=======================================================================
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Density Plot
+
+```{r}
+renderPlotly({
+  p1 <- df %>% 
+    filter(imdb>input$imdb_input[1], imdb<input$imdb_input[2]) %>% 
+    filter(mainMonsterGender==input$sex_input) %>% 
+    filter(format %in% input$format_input) %>% 
+    ggplot(aes(x=Year, color=arrested))+
+    geom_density()
+  ggplotly(p1)
+})
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Bar Plot
+
+```{r}
+renderPlotly({
+  p2 <- df %>% 
+    filter(imdb>input$imdb_input[1], imdb<input$imdb_input[2]) %>% 
+    filter(mainMonsterGender==input$sex_input) %>% 
+    filter(format %in% input$format_input) %>%  
+    ggplot(aes(x=motive, fill=arrested))+
+    geom_bar()
+  ggplotly(p2)
+})
+```
