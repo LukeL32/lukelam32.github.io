@@ -12,4 +12,3 @@ library(flexdashboard)
 
 Column {data-width=650}
 -----------------------------------------------------------------------
-[Back to Selection](finalpage.html)

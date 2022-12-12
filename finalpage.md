@@ -14,11 +14,9 @@
 
 [Question 7](https://lukelam32.shinyapps.io/FinalQ7/)
 
-[Question 8](https://lukelam32.shinyapps.io/FinalQ8/)
+[Question 8](https://lukel32.shinyapps.io/FinalQ8/)
 
-[Question 9](https://lukelam32.shinyapps.io/FinalQ9/)
+[Question 9](https://lukel32.shinyapps.io/FinalQ9/)
 
-[Question 10](https://lukelam32.shinyapps.io/FinalQ10/)
-
-[Back to Main](https://lukel32.github.io/lukelam32.github.io/)
+[Question 10](https://lukel32.shinyapps.io/FinalQ10/)
 
