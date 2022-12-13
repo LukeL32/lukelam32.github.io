@@ -23,28 +23,67 @@ title: "Assignment 12: Predictive Modeling - Part 3"
 knitr::opts_chunk$set(message = FALSE)
 ```
 
-```{r}
-df <- read.csv('PimaIndiansDiabetes.csv')
-```
 
 ```{r}
 library(rpart)
 library(rattle)
+library(mlbench)
+library(tidyverse)
+library(caret)
+data(PimaIndiansDiabetes)
+df <- tibble(PimaIndiansDiabetes)
+df <- drop_na(df)
 ```
 
 1. Use the `PimaIndiansDiabetes` dataset. Use 15% data for testing. Use cross-validation with of 7 folds to tune random forest `(method='ranger')`.  What are the parameters that produce the greatest accuracy? What is the testing accuracy. 
 ```{r}
+splitIndex <- createDataPartition(df$diabetes, p = .85, list = FALSE)
 
+df_train <- df[splitIndex,]
+df_test <- df[-splitIndex,]
 ```
 
-2. Use the `PimaIndiansDiabetes` dataset. Go to https://topepo.github.io/caret/available-models.html and pick a classification model.  Tune the classification model using cross-validation of 7 folds. 
 ```{r}
+ranger <- train(diabetes ~., data=df_train, method = "ranger", maxdepth=7)
+prediction1 <- predict(ranger, df_test)
+confmatrix1 <- confusionMatrix(data = prediction1, reference = df_test$diabetes)
+confmatrix1$overall[1]
+```
 
+
+2. Use the `PimaIndiansDiabetes` dataset. Go to https://topepo.github.io/caret/available-models.html and pick a classification model.  Tune the classification model using cross-validation of 7 folds. 
+
+```{r}
+library(glmnet)
+```
+
+
+```{r}
+glmnet <- train(diabetes ~., data=df_train, method = "glmnet", maxdepth=7)
+prediction2 <- predict((glmnet), df_test)
+confmatrix2 <- confusionMatrix(data = prediction2, reference = df_test$diabetes)
+confmatrix2$overall[1]
 ```
 
 
 3. (Model Comparison) Use the `PimaIndiansDiabetes` dataset. Pick two models at [this link](https://topepo.github.io/caret/available-models.html) to compare using 7-fold cross validation method. Evaluate the accuracy of the final model on the test data. 
 ```{r}
-
+rpart <- train(diabetes ~., data=df_train, method = "rpart", maxdepth=7)
+prediction3 <- predict(rpart, df_test)
+confmatrix3 <- confusionMatrix(data = prediction3, reference = df_test$diabetes)
+confmatrix3$overall[1]
 ```
 
+```{r}
+library(randomForest)
+```
+
+
+```{r}
+forest <- randomForest(diabetes ~., data=df_train, ntrees=500, maxdepth=7)
+prediction4 <- predict(forest, df_test)
+confmatrix4 <- confusionMatrix(data = prediction2, reference = df_test$diabetes)
+confmatrix4$overall[1]
+```
+
+All models used in this assignment except for the rpart model had the highest accuracies of 0.7913. This may be the max accuracy, or there may be some other confounding cause as to why they are all the same.
