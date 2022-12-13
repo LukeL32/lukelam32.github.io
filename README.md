@@ -6,13 +6,13 @@
 
 [Assignment 3](Assignment-3.html)
 
-[Assignment 4](Assignment-4.html)
+[Assignment 4](Assignment-4.html) - [Extra Credit](Extra-Credit-4.html)
 
-[Assignment 5](Assignment-5.html)
+[Assignment 5](Assignment-5.html) - [Extra Credit](Extra-Credit-5.html)
 
 [Assignment 6](Assignment-6.html)
 
-[Assignment 7](Assignment-7.html) - [Plot for Assignment 7](plot7.png)
+[Assignment 7](Assignment-7.html) - [Plot](plot7.png) - [Extra Credit](Extra-Credit-7.html) 
 
 [Assignment 8](Assignment-8.html)
 

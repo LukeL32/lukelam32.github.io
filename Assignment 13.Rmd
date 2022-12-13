@@ -34,31 +34,226 @@ knitr::opts_chunk$set(message = FALSE)
 
     - '21' if the released_year is greater or equal to 2000, and
     
-    - '20' otherwise. 
+    - '20' otherwise.
+
+```{r}
+#install.packages('wordcloud')
+#install.packages('tidytext')
+#install.packages('stopwords')
+#install.packages('textrecipes')
+#install.packages('yardstick')
+library(wordcloud)
+library(tidyverse)
+library(tidytext)
+library(knitr)
+df <- read.csv('netflix_titles.csv')
+```
+
+```{r}
+df$century <- case_when(df$release_year >= 2000 ~ '21',TRUE ~ '20')
+```
     
 **2. Word Frequency**    
 
   a. Convert the description to tokens, remove all the stop words. What are the top 10 frequent words of movies/TV Shows in the 20th century.  Plot the bar chart of the frequency of these words. 
 
-  b. What are the top 10 frequent words of movies/TV Shows in the 21st century. Plot the bar chart of the frequency of these words. Plot a side-by-side bar charts to compare the most frequent words by the two centuries. 
+
+```{r}
+df %>% 
+  unnest_tokens(input = description, output = word) %>% 
+  anti_join(get_stopwords()) %>% 
+  count(type, word, sort = TRUE) %>% 
+  head(10) %>% 
+  ggplot(aes(x = n, y = reorder(word, n))) +
+  geom_col() +
+  labs(x = 'Frequency', y= '')
+```
+
+
+  b. What are the top 10 frequent words of movies/TV Shows in the 21st century. Plot the bar chart of the frequency of these words. Plot a side-by-side bar charts to compare the most frequent words by the two centuries.
+  
+```{r}
+df %>%
+  unnest_tokens(input = description, output = word) %>% 
+  anti_join(get_stopwords()) %>% 
+  count(century, word, sort = TRUE) %>% 
+  group_by(century) %>%
+  slice_max(n, n = 10) %>% 
+  ungroup() %>%
+  mutate(word = reorder_within(word, by = n, within = century)) %>%
+  ggplot(aes(n, word, fill = century)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~century, scales = "free") +
+  labs(x = "Frequency", y = NULL)+
+  scale_y_reordered() 
+```
+
 
 **3. Word Cloud**
 
   a. Plot the word cloud of the words in the descriptions in the movies/TV Shows in the 20th century.
+
+```{r}
+install.packages('wordcloud')
+```
+
+
+```{r}
+pal <- brewer.pal(8,"Dark2")
+
+df %>%
+  filter(century=='20') %>%
+  unnest_tokens(input = description, output = word) %>% 
+  anti_join(get_stopwords()) %>% 
+  count(word, sort = TRUE) %>%
+  with(wordcloud(word, n, random.order = FALSE, max.words = 50, colors=pal))
+```
+
   
-  b. Plot the word cloud of the words in the descriptions in the movies/TV Shows in the 21st century. 
+  b. Plot the word cloud of the words in the descriptions in the movies/TV Shows in the 21st century.
+  
+```{r}
+df %>%
+  filter(century=='21') %>%
+  unnest_tokens(input = description, output = word) %>% 
+  anti_join(get_stopwords()) %>% 
+  count(word, sort = TRUE) %>%
+  with(wordcloud(word, n, random.order = FALSE, max.words = 50, colors=pal))
+```
+
 
 **4. Sentiment Analysis**
 
-  a. Is movies/TV Shows in the 21st century tends to be more positive than those in 20th century?  Use the sentiment analysis by `Bing` lexicons to address the question. 
+  a. Is movies/TV Shows in the 21st century tends to be more positive than those in 20th century?  Use the sentiment analysis by `Bing` lexicons to address the question.
+  
+```{r}
+df %>%
+    mutate(century = if_else(release_year>=2000, '21','20')) %>% 
+    unnest_tokens(input = description, output = word) %>% 
+    anti_join(get_stopwords()) %>% 
+    count(century, word, sort = TRUE) %>%
+    group_by(century) %>% 
+    inner_join(get_sentiments("bing")) %>%
+    filter(!is.na(sentiment)) %>%
+    count(sentiment, sort = TRUE) %>% 
+    group_by(century) %>% 
+    mutate(n = n/sum(n)) %>% 
+    ggplot(aes(century, n, fill=sentiment))+
+    geom_col(position = 'fill')+
+    labs(x ='', y='Relative Frequency')
+```
+
   
   b. Do sentiment analysis using `nrc` and `afinn` lexicons.  Give your comments on the results.
+  
+```{r}
+library(textdata)
+```
+
+```{r}
+df %>%
+    unnest_tokens(input = description, output = word) %>% 
+    anti_join(get_stopwords()) %>% 
+    count(century, word, sort = TRUE) %>%
+    group_by(century) %>% 
+    inner_join(get_sentiments("nrc")) %>%
+    filter(!is.na(sentiment)) %>%
+    count(sentiment, sort = TRUE) %>% 
+    group_by(century) %>% 
+    mutate(n = n/sum(n)) %>% 
+    ggplot(aes(sentiment, n, fill=century))+
+    geom_col(position = 'fill')+
+    labs(x='', y='Relative Frequency')
+```
+21st century seems to have higher results for negative sentiments, but lower results for other sentiments. Overall, many of the proportions are the same.
+
+```{r}
+df %>%
+    unnest_tokens(input = description, output = word) %>% 
+    anti_join(get_stopwords()) %>% 
+    count(century, word, sort = TRUE) %>%
+    group_by(century) %>% 
+    inner_join(get_sentiments("nrc")) %>%
+    filter(!is.na(sentiment)) %>%
+    count(sentiment, sort = TRUE) %>% 
+    group_by(century) %>% 
+    mutate(n = n/sum(n)) %>% 
+    ggplot(aes(century, n, fill=sentiment))+
+    geom_col(position = 'fill')+
+    labs(x='Century', y='Relative Frequency')
+```
+
+Big proportions for positive and negative sentiments, and a variety for evrything else.
+
+```{r}
+df %>%
+    unnest_tokens(input = description, output = word) %>% 
+    anti_join(get_stopwords()) %>% 
+    count(century, word, sort = TRUE) %>%
+    group_by(century) %>% 
+    inner_join(get_sentiments("afinn")) %>%
+    mutate(sentiment = value) %>% 
+    filter(!is.na(sentiment)) %>%
+    count(sentiment, sort = TRUE) %>% 
+    group_by(century) %>% 
+    mutate(n = n/sum(n)) %>% 
+    ggplot(aes(century, n, fill=factor(sentiment)))+
+    geom_col(position = 'dodge')+
+    labs(x='', y='Relative Frequency', fill = 'Sentiment')
+```
+
+Both histograms look pretty much the same, with the sentiment value of -2 being the most common.
 
 **5. Modeling**
 
-  a. Use the description to predict if a movie/TV show is in 20th or 21st century. Give the accuracy and plot the confusion matrix table. 
+  a. Use the description to predict if a movie/TV show is in 20th or 21st century. Give the accuracy and plot the confusion matrix table.
+  
+```{r}
+library(caret)
+library(themis)
+library(textrecipes)
+library(yardstick)
+```
+
+```{r}
+df <- df %>% 
+  mutate(target = century) %>% 
+  select(target, description)
+
+stuff <- recipe(target~description, data = df) %>% 
+  step_tokenize(description) %>% 
+  step_tokenfilter(description, max_tokens = 50) %>% 
+  step_tfidf(description) %>% 
+  step_normalize(all_numeric_predictors()) %>% 
+  step_smote(target) %>% 
+  prep()
+df <- juice(stuff)
+
+set.seed(2021)
+splitIndex <- createDataPartition(df$target, p = .07, list = FALSE)
+df_train <- df[splitIndex,]
+df_test <- df[-splitIndex,]
+
+ranger <- train(target ~., data=df_train, method = "ranger")
+prediction1 <- predict(ranger, df_test)
+confmatrix1 <- confusionMatrix(data = prediction1, reference = df_test$target)
+confmatrix1$overall[1]
+```
+```{r}
+df5_1 = data.frame(prediction1 = prediction1, obs = df_test$target)
+
+df5_1 %>%
+  conf_mat(prediction1, obs) %>%
+  autoplot
+```
+
   
   b. Create variable century2 taking three following values. (Hint: You can use the case_when function to do this)
+  
+```{r}
+df <- read.csv('netflix_titles.csv')
+```
+
 
     - `21` if released_year is greater or equal to 2000
     
@@ -66,17 +261,141 @@ knitr::opts_chunk$set(message = FALSE)
     
     - `first_half_20` otherwise
     
+```{r}
+df$century2 <- case_when(df$release_year >= 2000 ~ "21", df$release_year >= 1950 ~ "second_half_20" , df$release_year>= 1900~"first_half_20")
+```
+    
   Predict century2 using the descriptions. Give the accuracy and plot the confusion matrix table. (Notice that the codes for 8 should still work for this question)
+  
+```{r}
+df <- df %>% 
+  mutate(target = century2) %>% 
+  select(target, description) 
+
+thing <- recipe(target~description, data = df) %>% 
+  step_tokenize(description) %>% 
+  step_tokenfilter(description, max_tokens = 50) %>% 
+  step_tfidf(description) %>% 
+  step_normalize(all_numeric_predictors()) %>% 
+  step_smote(target) %>% 
+  prep()
+df <- juice(thing)
+
+set.seed(2022)
+splitIndex <- createDataPartition(df$target, p = .01, list = FALSE)
+df_train <- df[splitIndex,]
+df_test <- df[-splitIndex,]
+
+ranger2 <- train(target ~., data=df_train, method = "ranger")
+prediction2 <- predict(ranger2, df_test)
+confmatrix2 <- confusionMatrix(data = prediction2, reference = df_test$target)
+confmatrix2$overall[1]
+```
+
+```{r}
+df5_2 = data.frame(prediction2 = prediction2, obs = df_test$target)
+df5_2 %>%
+  conf_mat(prediction2, obs) %>%
+  autoplot
+```
+
 
 **6.** Create another categorical variable from the data and do the following
 
+```{r}
+df <- read.csv('netflix_titles.csv')
+df$era <- case_when(df$release_year < 1973 ~"era_1", df$release_year < 1990 ~ "era_2", df$release_year < 2002 ~ "era_3", df$release_year < 2016 ~ "era_4", TRUE ~ "era_5")
+```
+
     - Plot side-by-side word frequency by different categories of the newly created variable
+  
+```{r}
+df %>%
+  unnest_tokens(input = description, output = word) %>% 
+  anti_join(get_stopwords()) %>% 
+  count(era, word, sort = TRUE) %>% 
+  group_by(era) %>%
+  slice_max(n, n = 10) %>% 
+  ungroup() %>%
+  mutate(word = reorder_within(word, by = n, within = era)) %>%
+  ggplot(aes(n, word, fill = era)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~era, scales = "free") +
+  labs(x = "Frequency", y = NULL)+
+  scale_y_reordered()
+```
+
     
     - Plot word clouds on different categories of the newly created variable
+
+```{r}
+pal <- brewer.pal(8,"Dark2")
+
+df %>%
+  filter(era=='era_1') %>% 
+  unnest_tokens(input = description, output = word) %>% 
+  anti_join(get_stopwords()) %>% 
+  count(word, sort = TRUE) %>%
+  with(wordcloud(word, n, random.order = FALSE, max.words = 50, colors=pal))
+```
+
+```{r}
+pal <- brewer.pal(8,"Dark2")
+
+df %>%
+  filter(era=='era_5') %>% 
+  unnest_tokens(input = description, output = word) %>% 
+  anti_join(get_stopwords()) %>% 
+  count(word, sort = TRUE) %>%
+  with(wordcloud(word, n, random.order = FALSE, max.words = 50, colors=pal))
+```
+
     
     - Do sentiment analysis to compare different categories of the newly created variable
     
-    - Predict the newly created variable using the description. Give the accuracy and plot the confusion matrix table. 
+```{r}
+df %>% 
+    unnest_tokens(input = description, output = word) %>% 
+    anti_join(get_stopwords()) %>% 
+    count(era, word, sort = TRUE) %>%
+    group_by(era) %>% 
+    inner_join(get_sentiments("bing")) %>%
+    filter(!is.na(sentiment)) %>%
+    count(sentiment, sort = TRUE) %>% 
+    group_by(era) %>% 
+    mutate(n = n/sum(n)) %>% 
+    ggplot(aes(era, n, fill=sentiment))+
+    geom_col(position = 'fill')+
+    labs(x='', y='Relative Frequency')
+```
+
+    - Predict the newly created variable using the description. Give the accuracy and plot the confusion matrix table.
+
+```{r}
+df <- df %>% 
+  mutate(target = era) %>% 
+  select(target, description) 
+
+another <- recipe(target~description, data = df) %>% 
+  step_tokenize(description) %>% 
+  step_tokenfilter(description, max_tokens = 50) %>% 
+  step_tfidf(description) %>% 
+  step_normalize(all_numeric_predictors()) %>% 
+  step_smote(target) %>% 
+  prep()
+df <- juice(another)
+
+set.seed(2021)
+splitIndex <- createDataPartition(df$target, p = .02, list = FALSE)
+df_train <- df[splitIndex,]
+df_test <- df[-splitIndex,]
+
+ranger3 <- train(target~., data=df_train, method = "ranger")
+prediction3 <- predict(ranger3, df_test)
+confmatrix3 <- confusionMatrix(data = prediction3, reference = df_test$target)
+confmatrix3$overall[1]
+```
+
     
 -------
 
@@ -86,18 +405,104 @@ We will study the Animal Crossing Data at [Kaggle](https://www.kaggle.com/jessem
 
 **7.**  Download the animal reviews data at this [link](../data/user_reviews.tsv).  Read the data using `read_tsv()` function.
 
+```{r}
+df2 <- read_tsv('user_reviews.tsv')
+```
+
+
 **8.** Create a `rating` variable taking value `good` if the grade is greater than 7 and `bad` otherwise. 
 ```{r}
-df <- rating %>%
-  case_when(grade > '7' ~ 'good',TRUE ~ 'bad' )
+df2$rating <- case_when(df2$grade > '7' ~ 'good',TRUE ~ 'bad' )
 ```
 
 **9.** Do the follows. Notice that the text information is in the `text` variable. 
 
     - Plot side-by-side word frequency by different categories of the `rating` variable
-    
+
+```{r}
+df2 %>%
+  unnest_tokens(input = text, output = word) %>% 
+  anti_join(get_stopwords()) %>% 
+  count(rating, word, sort = TRUE) %>% 
+  group_by(rating) %>%
+  slice_max(n, n = 10) %>% 
+  ungroup() %>%
+  mutate(word = reorder_within(word, by = n, within = rating)) %>%
+  ggplot(aes(n, word, fill = rating)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~rating, scales = "free") +
+  labs(x = "Frequency", y = NULL)+
+  scale_y_reordered()
+```
+
+
     - Plot word clouds on different categories of the `rating` variable
-    
+
+```{r}
+pal <- brewer.pal(8,"Dark2")
+
+df2 %>%
+  filter(rating=='good') %>% 
+  unnest_tokens(input = text, output = word) %>% 
+  anti_join(get_stopwords()) %>% 
+  count(word, sort = TRUE) %>%
+  with(wordcloud(word, n, random.order = FALSE, max.words = 50, colors=pal))
+```
+
+```{r}
+pal <- brewer.pal(8,"Dark2")
+
+df2 %>%
+  filter(rating=='bad') %>% 
+  unnest_tokens(input = text, output = word) %>% 
+  anti_join(get_stopwords()) %>% 
+  count(word, sort = TRUE) %>%
+  with(wordcloud(word, n, random.order = FALSE, max.words = 50, colors=pal))
+```
+
     - Do sentiment analysis to compare different categories of the `rating` variable
     
+```{r}
+df2 %>% 
+    unnest_tokens(input = text, output = word) %>% 
+    anti_join(get_stopwords()) %>% 
+    count(rating, word, sort = TRUE) %>%
+    group_by(rating) %>% 
+    inner_join(get_sentiments("bing")) %>%
+    filter(!is.na(sentiment)) %>%
+    count(sentiment, sort = TRUE) %>% 
+    group_by(rating) %>% 
+    mutate(n = n/sum(n)) %>% 
+    ggplot(aes(rating, n, fill=sentiment))+
+    geom_col(position = 'fill')+
+    labs(x='', y='Relative Frequency')
+```
+
+    
     - Predict the rating using the reviews (`text` variable). Give the accuracy and plot the confusion matrix table.
+
+```{r}
+df2 <- df2 %>% 
+  mutate(target = rating) %>% 
+  select(target, text) 
+
+last_one <- recipe(target~text, data = df2) %>% 
+  step_tokenize(text) %>% 
+  step_tokenfilter(text, max_tokens = 50) %>% 
+  step_tfidf(text) %>% 
+  step_normalize(all_numeric_predictors()) %>% 
+  step_smote(target) %>% 
+  prep()
+df2 <- juice(last_one)
+
+set.seed(2021)
+splitIndex <- createDataPartition(df2$target, p = .02, list = FALSE)
+df2_train <- df2[splitIndex,]
+df2_test <- df2[-splitIndex,]
+
+ranger4 <- train(target ~., data=df2_train, method = "ranger")
+prediction4 <- predict(ranger4, df2_test)
+confmatrix4 <- confusionMatrix(data = prediction4, reference = df2_test$target)
+confmatrix4$overall[1]
+```
+
